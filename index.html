@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>websocket</title>
+    <style>
+        input {
+            display: block;
+        }
+        ul {
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+
+    <ul id="messages"></ul>
+    <form id="chatbox">
+        <textarea></textarea>
+        <input type="submit"  value="send">
+    </form>
+    <div id="show"></div>
+
+
+    <script  src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"> </script>
+    <script>
+
+        $(function () {
+            var socket = null;
+            var msgBox = $('#chatbox textarea');
+            var messages = $('#messages');
+
+            $('#chatbox').submit(function () {
+                if (!msgBox.val()) return false;
+                if (!socket){
+                    alert("Error: No websocket connection");
+                    return false;
+                }
+                socket.send(msgBox.val());
+                msgBox.val("");
+                return false;
+            });
+            if (!window["WebSocket"]){
+                alert("Error: browser does not support websocket")
+            }else {
+                socket = new WebSocket("ws://localhost:8080/ws");
+                socket.onclose = function () {
+                    alert("connection closed");
+                }
+                socket.onmessage = function (event) {
+                    messages.append($("<li>").text(event.data))
+                }
+            }
+        });
+    </script>
+</body>
+</html>
